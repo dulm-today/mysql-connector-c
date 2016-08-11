@@ -13,7 +13,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-IF(WIN32 AND MSVC12)
+IF(WIN32)
   # CMake 2.8.12 is needed for Visual Studio 2013
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
 ELSE()
@@ -415,9 +415,15 @@ IF(SYSCONFDIR)
   SET(DEFAULT_SYSCONFDIR "${SYSCONFDIR}")
 ENDIF()
 
-SET(TMPDIR "P_tmpdir"
-  CACHE PATH
-  "PATH to MySQL TMP dir. Defaults to the P_tmpdir macro in <stdio.h>")
+IF(WIN32) # P_tmpdir is not defined on Windows as of VS2015.
+  SET(TMPDIR "" # So we use empty path as default. In practice TMP/TEMP is used
+    CACHE PATH
+    "PATH to MySQL TMP dir")
+ELSE()
+  SET(TMPDIR "P_tmpdir"
+    CACHE PATH
+    "PATH to MySQL TMP dir. Defaults to the P_tmpdir macro in <stdio.h>")
+ENDIF()
 IF(TMPDIR STREQUAL "P_tmpdir")
   # Do not quote it, to refer to the P_tmpdir macro.
   SET(DEFAULT_TMPDIR "P_tmpdir")

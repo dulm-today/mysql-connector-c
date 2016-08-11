@@ -46,6 +46,7 @@ typedef pthread_cond_t native_cond_t;
 
 static DWORD get_milliseconds(const struct timespec *abstime)
 {
+#ifndef HAVE_STRUCT_TIMESPEC
   long long millis;
   union ft64 now;
 
@@ -76,6 +77,18 @@ static DWORD get_milliseconds(const struct timespec *abstime)
     millis= UINT_MAX;
 
   return (DWORD)millis;
+#else
+  /*
+    Convert timespec to millis and subtract current time.
+    my_getsystime() returns time in 100 ns units.
+  */
+  ulonglong future= abstime->tv_sec * 1000 + abstime->tv_nsec / 1000000;
+  ulonglong now= my_getsystime() / 10000;
+  /* Don't allow the timeout to be negative. */
+  if (future < now)
+    return 0;
+  return (DWORD)(future - now);
+#endif
 }
 #endif /* _WIN32 */
 

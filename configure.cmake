@@ -558,6 +558,12 @@ CHECK_TYPE_SIZE("int"       SIZEOF_INT)
 CHECK_TYPE_SIZE("long long" SIZEOF_LONG_LONG)
 CHECK_TYPE_SIZE("off_t"     SIZEOF_OFF_T)
 CHECK_TYPE_SIZE("time_t"    SIZEOF_TIME_T)
+CHECK_CXX_SOURCE_COMPILES(
+"#include  <time.h>
+int main() { 
+  struct timespec t = {}; 
+  return 0;
+}" HAVE_STRUCT_TIMESPEC)
 
 # If finds the size of a type, set SIZEOF_<type> and HAVE_<type>
 FUNCTION(MY_CHECK_TYPE_SIZE type defbase)
